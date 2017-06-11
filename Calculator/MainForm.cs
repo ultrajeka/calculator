@@ -12,9 +12,13 @@ namespace Calculator
 {
     public partial class MainForm : Form
     {
-        string outputString;
-        int variable;
-        int sum;
+        string inputString;
+        string operation;
+
+        double firstVariable;
+        double secondVariable;
+        double result;
+
         public MainForm()
         {
             InitializeComponent();
@@ -29,43 +33,84 @@ namespace Calculator
             btn8.Click += btnClickHandler;
             btn9.Click += btnClickHandler;
 
+            btnPlus.Click += SetOperation;
+            btnMinus.Click += SetOperation;
+            btnMultiply.Click += SetOperation;
+            btnDivide.Click += SetOperation;
+
+            firstVariable = secondVariable = result = 0.0;
         }
 
         void btnClickHandler(object sender, EventArgs e)
         {
-            outputString += ((Button)sender).Text;
-            tbOutput.Text = outputString.ToString();
+            inputString += ((Button)sender).Text;
+            tbOutput.Text = inputString;
+        }
+
+        private void SetOperation(object sender, EventArgs e)
+        {
+            firstVariable = double.Parse(tbOutput.Text);
+            tbOutput.Text = "0";
+            inputString = "";
+            operation = ((Button)sender).Text;
         }
 
         private void btnRemoveOne_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(outputString))
+            if (!string.IsNullOrEmpty(inputString))
             {
-                outputString = outputString.Remove(outputString.Length - 1, 1);
-                tbOutput.Text = outputString;
+                inputString = inputString.Remove(inputString.Length - 1, 1);
+                tbOutput.Text = inputString;
             }
-        }
-
+        }       
         private void btnRemoveAll_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(outputString))
+            if (!string.IsNullOrEmpty(inputString))
             {
-                outputString = outputString.Remove(outputString.Length-outputString.Length);
-                tbOutput.Text = outputString;
+                inputString = "";
+                tbOutput.Text = "0";
+                firstVariable = secondVariable = result = 0.0;
             }
-        }
-
-        private void btnPlus_Click(object sender, EventArgs e)
-        {
-            variable = Convert.ToInt32(outputString);
-            sum = variable + Convert.ToInt32(outputString);
         }
 
         private void btnEqually_Click(object sender, EventArgs e)
         {
-            tbOutput.Text = sum.ToString();
+            secondVariable = double.Parse(tbOutput.Text);
+            Calculate(firstVariable, secondVariable, operation);
         }
 
+        private void Calculate(double firstVariable, double secondVariable, string operation)
+        {
+            switch (operation)
+            {
+                case "+":
+                    result = firstVariable + secondVariable;
+                    break;
+                case "-":
+                    result = firstVariable - secondVariable;
+                    break;
+                case "*":
+                    result = firstVariable * secondVariable;
+                    break;
+                case "/":
+                    if (secondVariable != 0)
+                    {
+                        result = firstVariable / secondVariable; 
+                    }
+                    else
+                    {
+                        if(MessageBox.Show("Нельзя дклить на ноль. ХЗ почему. Так сказали в школе.\nТЫ ПОНЯЛ?", "Деление на ноль", 
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Error) == System.Windows.Forms.DialogResult.No)
+                        {
+                            MessageBox.Show("Вот алень!!!");
+                        }
 
+                        return;
+                    }
+                    break;
+            }
+
+            tbOutput.Text = result.ToString();
+        }
     }
 }
