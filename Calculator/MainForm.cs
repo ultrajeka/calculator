@@ -37,6 +37,7 @@ namespace Calculator
             btnMinus.Click += SetOperation;
             btnMultiply.Click += SetOperation;
             btnDivide.Click += SetOperation;
+            btnSqr.Click += SetOperation;
 
             firstVariable = secondVariable = result = 0.0;
         }
@@ -44,15 +45,22 @@ namespace Calculator
         void btnClickHandler(object sender, EventArgs e)
         {
             inputString += ((Button)sender).Text;
-            tbOutput.Text = inputString;
+            tbInput.Text = inputString;
         }
 
         private void SetOperation(object sender, EventArgs e)
-        {
-            firstVariable = double.Parse(tbOutput.Text);
+        {            
+            firstVariable = double.Parse(tbInput.Text);
+            tbFirstVar.Text = firstVariable.ToString();
             tbOutput.Text = "0";
             inputString = "";
             operation = ((Button)sender).Text;
+            tbOperation.Text = operation;
+            if (operation == "√")
+            {
+                tbOutput.Text = Math.Sqrt(firstVariable).ToString();
+                tbInput.Text = "0";
+            }
         }
 
         private void btnRemoveOne_Click(object sender, EventArgs e)
@@ -60,23 +68,28 @@ namespace Calculator
             if (!string.IsNullOrEmpty(inputString))
             {
                 inputString = inputString.Remove(inputString.Length - 1, 1);
-                tbOutput.Text = inputString;
+                tbInput.Text = inputString;
             }
         }       
         private void btnRemoveAll_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(inputString))
-            {
-                inputString = "";
-                tbOutput.Text = "0";
-                firstVariable = secondVariable = result = 0.0;
-            }
+
+            inputString = "";
+            tbOutput.Text = "0";
+            tbSecondVar.Text = "0";
+            tbOperation.Text = "";
+            tbFirstVar.Text = "0";
+            tbInput.Text = "0";
+            firstVariable = secondVariable = result = 0.0; ;  
+
         }
 
         private void btnEqually_Click(object sender, EventArgs e)
         {
-            secondVariable = double.Parse(tbOutput.Text);
+            secondVariable = double.Parse(tbInput.Text);
+            tbSecondVar.Text = secondVariable.ToString();
             Calculate(firstVariable, secondVariable, operation);
+            tbInput.Text = "0";
         }
 
         private void Calculate(double firstVariable, double secondVariable, string operation)
@@ -94,19 +107,9 @@ namespace Calculator
                     break;
                 case "/":
                     if (secondVariable != 0)
-                    {
                         result = firstVariable / secondVariable; 
-                    }
                     else
-                    {
-                        if(MessageBox.Show("Нельзя дклить на ноль. ХЗ почему. Так сказали в школе.\nТЫ ПОНЯЛ?", "Деление на ноль", 
-                            MessageBoxButtons.YesNo, MessageBoxIcon.Error) == System.Windows.Forms.DialogResult.No)
-                        {
-                            MessageBox.Show("Вот алень!!!");
-                        }
-
-                        return;
-                    }
+                        MessageBox.Show("Нельзя делить на ноль. ХЗ почему. Так сказали в школе."); 
                     break;
             }
 
